@@ -1,0 +1,38 @@
+test_0 = test_images[:,:50,:50,:]
+test_1 = test_images[:,:50,50:100,:]
+test_2 = test_images[:,:50,100:150,:]
+test_3 = test_images[:,50:100,:50,:]
+test_4 = test_images[:,50:100,50:100,:]
+test_5 = test_images[:,50:100,100:150,:]
+test_6 = test_images[:,100:150,:50,:]
+test_7 = test_images[:,100:150,50:100,:]
+test_8 = test_images[:,100:150,100:150,:]
+
+def my_resize(data):
+    images = []
+    for i in range(data.shape[0]):
+        img = data[i]
+        images.append(cv2.resize(img,(150,150)))
+    return np.array(images)
+
+grid_prediction = []
+grid = [test_0, test_1, test_2, test_3, test_4, test_5, test_6, test_7, test_8]
+
+for test_data in grid:
+    resized_data = my_resize(test_data)
+    guess = model.predict(resized_data)
+    grid_prediction.append(guess)
+    
+
+grid3 = np.argmax(grid2, axis=2)
+
+from scipy.stats import mode
+grid4 = mode(grid3, axis=0).mode
+grid4 = grid4.reshape(-1,)
+grid4.shape
+
+grid_vote_acc = 0
+for i in range(test_labels.shape[0]):
+    if grid4[i]==test_labels[i]:
+        grid_vote_acc += 1
+grid_vote_acc/test_labels.shape[0]
